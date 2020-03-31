@@ -2,13 +2,8 @@ import pyvista as pv
 import vtk
 import numpy as np
 
-# color_list = ['red',
-#               'green',
-#               'aqua',
-#               'pink',
-#               'gold',
-#               'yellow']  # 目前最多六种颜色，即最多6个layer
-
+# every zone has a color from this list
+# the number of zones cannot over the length of this list
 color_list = [[0.4, 1, 0.1],
               [0.7, 0.9, 1],
               [0.3, 0, 0.9],
@@ -21,9 +16,12 @@ color_list = [[0.4, 1, 0.1],
 
 
 def create_polyhedron(polyhedron_data):
-    points = pv.vtk_points(np.array(polyhedron_data.vertex_list))  # 生成 polyhedron的所有点, 类型均为 list，3D坐标
+    """
+    create the vtk grid containing all points and faces
+    """
+    points = pv.vtk_points(np.array(polyhedron_data.vertex_list))
 
-    polyhedron_faces = polyhedron_data.polyhedron_faces  # 此处注意Top是最后一个点，之前插入点的时候也要注意
+    polyhedron_faces = polyhedron_data.polyhedron_faces
 
     polyhedron_faces_id_list = vtk.vtkIdList()
     # Number faces that make up the cell.
@@ -35,7 +33,8 @@ def create_polyhedron(polyhedron_data):
         [polyhedron_faces_id_list.InsertNextId(i) for i in face]
 
     polyhedron_grid = vtk.vtkUnstructuredGrid()
-    polyhedron_grid.InsertNextCell(vtk.VTK_POLYHEDRON, polyhedron_faces_id_list)
+    polyhedron_grid.InsertNextCell(
+        vtk.VTK_POLYHEDRON, polyhedron_faces_id_list)
     polyhedron_grid.SetPoints(points)
 
     return polyhedron_grid
@@ -44,14 +43,13 @@ def create_polyhedron(polyhedron_data):
 class PolyhedronData:
 
     def __init__(self, para_list):
-        # self.file_name = file_name  # 后期会有一个reader用于读取传进来的file_name
-        # lines_from_txt = txt_reader(file_name)
-        self.vertex_list, self.polyhedron_faces, self.layer = para_list[0], para_list[1], para_list[2]
+        self.vertex_list, self.polyhedron_faces, self.zone = para_list[
+            0], para_list[1], para_list[2]
         self.grid = create_polyhedron(self)
-        self.color = color_list[self.layer]
+        self.color = color_list[self.zone]
 
-    def get_layer(self):
-        return self.layer
+    def get_zone(self):
+        return self.zone
 
     def get_grid(self):
         return self.grid
