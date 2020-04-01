@@ -1,4 +1,4 @@
-# 3D-visualization-of-brillion-zone
+# 3D-visualization-of-brillouin-zone
 
 ## 1. Functions
 A short description is in this link: 
